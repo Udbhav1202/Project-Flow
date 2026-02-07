@@ -10,5 +10,7 @@ const auth = require("../middleware/authMiddleware");
 
 router.post("/", auth, createTask);
 router.get("/:projectId", auth, getTasksByProject);
+router.patch("/:id/status", auth, updateTaskStatus);
+
 
 module.exports = router;
