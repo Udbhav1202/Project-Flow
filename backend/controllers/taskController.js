@@ -13,6 +13,7 @@ const createTask = async (req, res) => {
     if (project.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: "Only owner can create tasks" });
     }
+    
     const task = await Task.create({
       title,
       projectId,
@@ -27,13 +28,31 @@ const createTask = async (req, res) => {
 
 const getTasksByProject = async (req, res) => {
   try {
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
+
+    const total = await Task.countDocuments({
+      projectId: req.params.projectId
+    });
+
+
+    //
     const tasks = await Task.find({
       projectId: req.params.projectId
     })
+    .skip(skip)
+    .limit(limit)
     .populate("assignedTo", "name email")
     .populate("projectId", "title");
 
-    res.json(tasks);
+    res.json({
+      totalTasks: total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      tasks
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
