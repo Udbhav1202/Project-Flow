@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
   createTask,
-  getTasksByProject
+  getTasksByProject,
+  updateTaskStatus
 } = require("../controllers/taskController");
 
 const auth = require("../middleware/authMiddleware");
