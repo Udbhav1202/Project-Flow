@@ -4,19 +4,22 @@ const projectSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, "Please add a title"],
+    
   },
+
   description: {
     type: String,
     required: [true, "Please add a description"],
   },
+  
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "UserModel",
+    ref: "User",
     required: [true, "Please add a user reference"]
   },
 }, { timestamps: true });
 
 
-const ProjectModel = mongoose.model("ProjectModel", projectSchema);
+const Project = mongoose.model("Project", projectSchema);
 
-module.exports = ProjectModel;
+module.exports = Project;
