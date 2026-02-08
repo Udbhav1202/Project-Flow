@@ -1,9 +1,18 @@
 const Task = require('../models/taskModel');
+const Project = require("../models/Project");
 
 const createTask = async (req, res) => {
   try {
     const { title, projectId, assignedTo } = req.body;
+    const project = await Project.findById(projectId);
 
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    if (project.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Only owner can create tasks" });
+    }
     const task = await Task.create({
       title,
       projectId,
@@ -20,7 +29,9 @@ const getTasksByProject = async (req, res) => {
   try {
     const tasks = await Task.find({
       projectId: req.params.projectId
-    });
+    })
+    .populate("assignedTo", "name email")
+    .populate("projectId", "title");
 
     res.json(tasks);
   } catch (error) {
@@ -38,10 +49,11 @@ const updateTaskStatus = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
+    //
     if (task.assignedTo.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not allowed" });
     }
-
+    //
     task.status = status;
     await task.save();
 
