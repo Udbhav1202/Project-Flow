@@ -1,17 +1,18 @@
 const Task = require('../models/taskModel');
 const Project = require("../models/Project");
+const AppError = require("../utils/AppError");
 
-const createTask = async (req, res) => {
+const createTask = async (req, res, next) => {
   try {
     const { title, projectId, assignedTo } = req.body;
     const project = await Project.findById(projectId);
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      throw new AppError("Project not found", 404);
     }
 
     if (project.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Only owner can create tasks" });
+      throw new AppError("Only owner can create tasks", 403);
     }
     
     const task = await Task.create({
@@ -22,11 +23,11 @@ const createTask = async (req, res) => {
 
     res.status(201).json(task);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-const getTasksByProject = async (req, res) => {
+const getTasksByProject = async (req, res, next) => {
   try {
 
     const page = parseInt(req.query.page) || 1;
@@ -54,33 +55,39 @@ const getTasksByProject = async (req, res) => {
       tasks
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-const updateTaskStatus = async (req, res) => {
+const updateTaskStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
+
+    const allowedStatus = ["todo", "in-progress", "done"];
+
+    if (!allowedStatus.includes(status)) {
+      throw new AppError("Invalid status value", 400);
+    }
 
     const task = await Task.findById(req.params.id);
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      throw new AppError("Task not found", 404);
     }
 
-    //
     if (task.assignedTo.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not allowed" });
+      throw new AppError("Only assigned user can update task status", 403);
     }
-    //
+
     task.status = status;
     await task.save();
 
     res.json(task);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
+
 
 
 module.exports = { createTask, getTasksByProject, updateTaskStatus };
