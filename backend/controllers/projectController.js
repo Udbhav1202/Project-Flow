@@ -1,6 +1,7 @@
 const Project = require('../models/projectModel');
+const AppError = require("../utils/AppError");
 
-const createProject = async (req, res) => {
+const createProject = async (req, res, next) => {
     try{
         const { title, description } = req.body;
 
@@ -12,11 +13,11 @@ const createProject = async (req, res) => {
 
         res.status(201).json(project);
     }catch(error){
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 };
 
-const getMyProjects = async (req, res) => {
+const getMyProjects = async (req, res, next) => {
   try {
 
     const projects = await Project.find({
@@ -26,8 +27,7 @@ const getMyProjects = async (req, res) => {
     res.json(projects);
 
   } catch (error) {
-    
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
