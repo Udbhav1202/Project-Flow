@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 const projectRoutes = require('./routes/projectRoutes');
 const userRoutes  = require('./routes/userRoutes');
 const taskRoutes = require('./routes/taskRoutes');
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express()
 app.use(express.json());
@@ -22,3 +23,5 @@ app.use('/api/tasks', taskRoutes);
 app.listen(port, () => {
   console.log(`app listening on port ${port}`)
 })
+
+app.use(errorHandler);
