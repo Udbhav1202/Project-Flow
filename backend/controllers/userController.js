@@ -1,18 +1,19 @@
 const User = require('../models/userModel');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const AppError = require("../utils/AppError");
 
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ message: "Please enter all fields" });
+      return next(new AppError("Please enter all fields", 400));
     }
 
     const userExist = await User.findOne({ email });
     if(userExist){
-        return res.status(400).json({ message: " User already exist"});
+        return next(new AppError("User already exist", 400));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,14 +32,14 @@ const registerUser = async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(400).json({ message: "Invalid user data" });
+      return next(new AppError("Invalid user data", 400));
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   
   try{
     const { email, password } = req.body;
@@ -54,11 +55,11 @@ const loginUser = async (req, res) => {
         message: "Login Successful",
       });
     } else {
-      res.status(401).json({ message: "Invalid email or password" });
+      return next(new AppError("Invalid email or password", 401));
     }
 
   } catch(error){
-    res.status(500).json({ message: error.message });
+    next(error);
   }
   
 };
