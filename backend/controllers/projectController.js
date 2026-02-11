@@ -1,5 +1,4 @@
 const Project = require('../models/projectModel');
-const AppError = require("../utils/AppError");
 
 const createProject = async (req, res, next) => {
     try{
