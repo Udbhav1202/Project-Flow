@@ -20,8 +20,8 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 
+app.use(errorHandler);
+
 app.listen(port, () => {
   console.log(`app listening on port ${port}`)
 })
-
-app.use(errorHandler);
