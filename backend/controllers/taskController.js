@@ -1,24 +1,14 @@
 const Task = require('../models/taskModel');
-const Project = require("../models/Project");
+const Project = require("../models/projectModel");
 const AppError = require("../utils/AppError");
 
 const createTask = async (req, res, next) => {
   try {
-    const { title, projectId, assignedTo } = req.body;
-    const project = await Project.findById(projectId);
-
-    if (!project) {
-      throw new AppError("Project not found", 404);
-    }
-
-    if (project.createdBy.toString() !== req.user.id) {
-      throw new AppError("Only owner can create tasks", 403);
-    }
-    
-    const task = await Task.create({
-      title,
-      projectId,
-      assignedTo
+    const task = await createTaskService({
+      title: req.body.title,
+      projectId: req.body.projectId,
+      assignedTo: req.body.assignedTo,
+      userId: req.user.id,
     });
 
     res.status(201).json(task);
