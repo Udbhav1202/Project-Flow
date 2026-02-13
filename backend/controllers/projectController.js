@@ -1,33 +1,25 @@
-const Project = require('../models/projectModel');
+const asyncHandler = require('../utils/asyncHandler');
+const {
+  getMyProjectService,
+  createProjectService
+} = require("../services/projectService");
 
-const createProject = async (req, res, next) => {
-    try{
-        const { title, description } = req.body;
+const createProject = asyncHandler(async (req, res) => {
+  const project = await createProjectService({
+    title: req.body.title,
+    description: req.body.description,
+    userId: req.user.id
+  });
 
-        const project = await Project.create({
-            title,
-            description,
-            createdBy: req.user.id
-        });
+  res.status(201).json(project);
+});
 
-        res.status(201).json(project);
-    }catch(error){
-        next(error);
-    }
-};
+const getMyProjects = asyncHandler(async (req, res) => {
+  const projects = await getMyProjectService({
+    userId: req.user.id
+  });
 
-const getMyProjects = async (req, res, next) => {
-  try {
-
-    const projects = await Project.find({
-      createdBy: req.user.id
-    });
-
-    res.json(projects);
-
-  } catch (error) {
-    next(error);
-  }
-};
+  res.json(projects);
+});
 
 module.exports = { createProject, getMyProjects };
