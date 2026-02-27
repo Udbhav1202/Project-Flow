@@ -16,7 +16,7 @@ const createTaskService = async ({ title, projectId, assignedTo, userId }) => {
   const task = await Task.create({
     title,
     projectId,
-    assignedTo,
+    assignedTo: userId,
   });
 
   return task;
