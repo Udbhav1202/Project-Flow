@@ -1,7 +1,8 @@
 const asyncHandler = require('../utils/asyncHandler');
 const {
   registerUserService,
-  loginUserService
+  loginUserService,
+  getUsersService
 } = require('../services/userService');
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -23,4 +24,9 @@ const loginUser = asyncHandler(async (req, res) => {
   res.json(userData);
 });
 
-module.exports = { registerUser, loginUser };
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await getUsersService();
+  res.json(users);
+});
+
+module.exports = { registerUser, loginUser, getUsers };

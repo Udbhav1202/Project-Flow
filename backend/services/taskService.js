@@ -3,7 +3,13 @@ const Project = require("../models/projectModel");
 const AppError = require("../utils/AppError");
 
 const createTaskService = async ({ title, projectId, assignedTo, userId }) => {
+
+  console.log("Received assignedTo:", assignedTo);
   const project = await Project.findById(projectId);
+
+  if (!assignedTo) {
+    throw new AppError("Please assign a user", 400);
+  }
 
   if (!project) {
     throw new AppError("Project not found", 404);
@@ -16,7 +22,7 @@ const createTaskService = async ({ title, projectId, assignedTo, userId }) => {
   const task = await Task.create({
     title,
     projectId,
-    assignedTo: userId,
+    assignedTo,
   });
 
   return task;
@@ -38,7 +44,7 @@ const getTasksByProjectService = async ({ projectId, page }) => {
     totalTasks: total,
     currentPage: page,
     totalPages: Math.ceil(total / limit),
-    tasks
+    tasks,
   };
 };
 
@@ -66,5 +72,5 @@ const updateTaskStatusService = async ({ taskId, status, userId }) => {
 module.exports = {
   createTaskService,
   getTasksByProjectService,
-  updateTaskStatusService
+  updateTaskStatusService,
 };

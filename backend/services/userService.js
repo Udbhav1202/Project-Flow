@@ -59,4 +59,9 @@ const loginUserService = async ({ email, password }) => {
   };
 };
 
-module.exports = { registerUserService, loginUserService };
+const getUsersService = async () => {
+  const users = await User.find().select("_id name email");
+  return users;
+};
+
+module.exports = { registerUserService, loginUserService, getUsersService };
