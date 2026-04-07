@@ -6,6 +6,7 @@ const projectRoutes = require('./routes/projectRoutes');
 const userRoutes  = require('./routes/userRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const errorHandler = require("./middleware/errorHandler");
+const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 app.use(cors());
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 app.use('/api/projects', projectRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use(errorHandler);
 

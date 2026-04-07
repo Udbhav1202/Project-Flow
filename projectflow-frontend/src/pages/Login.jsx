@@ -394,7 +394,7 @@ function Login() {
 
           <p className="register-prompt">
             Don't have an account?{" "}
-            <button className="register-link" onClick={() => (window.location.href = "/projects")}>
+            <button className="register-link" onClick={() => (window.location.href = "/register")}>
               Create one
             </button>
           </p>

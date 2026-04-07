@@ -11,6 +11,7 @@ function Tasks() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [assignedTo, setAssignedTo] = useState("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     fetchTasks();
@@ -20,6 +21,7 @@ function Tasks() {
   const fetchTasks = async () => {
     try {
       const res = await api.get(`/tasks/${projectId}?page=${page}`);
+      console.log("Tasks from database:", res.data.tasks);
       setTasks(res.data.tasks);
       setTotalPages(res.data.totalPages);
     } catch (err) {
@@ -37,10 +39,12 @@ function Tasks() {
         title,
         projectId,
         assignedTo,
+        description,
       });
       console.log("Sending assignedTo:", assignedTo);
       setTitle("");
-      setAssignedTo(""); // Reset assigned user on success
+      setAssignedTo(""); 
+      setDescription(""); 
       fetchTasks();
     } catch (err) {
       console.log(err.response?.data);
@@ -139,7 +143,6 @@ function Tasks() {
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* Glass Card Base */
         .glass-card {
           background: rgba(255,255,255,0.04);
           border: 1px solid rgba(255,255,255,0.08);
@@ -150,7 +153,7 @@ function Tasks() {
             0 16px 32px rgba(0,0,0,0.3);
         }
 
-        /* Add Task Form */
+        /* ----- Add Task Form Refactored Layout ----- */
         .add-task-card {
           padding: 24px;
           margin-bottom: 32px;
@@ -159,7 +162,14 @@ function Tasks() {
 
         .add-task-form {
           display: flex;
+          flex-direction: column;
+          gap: 16px; /* Space between rows */
+        }
+
+        .form-row {
+          display: flex;
           gap: 12px;
+          width: 100%;
         }
 
         .field-input {
@@ -182,7 +192,28 @@ function Tasks() {
           box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
         }
 
-        /* Style for the Add Task Assign User Select */
+        .field-textarea {
+          flex: 1;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 12px;
+          padding: 14px 20px;
+          color: #f1f5f9;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          outline: none;
+          transition: all 0.2s;
+          resize: vertical;
+          min-height: 48px; /* Matches input height */
+        }
+
+        .field-textarea::placeholder { color: rgba(255,255,255,0.2); }
+        .field-textarea:focus {
+          border-color: rgba(34,197,94,0.5);
+          background: rgba(34,197,94,0.06);
+          box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+        }
+
         .form-select-wrapper {
           position: relative;
           min-width: 160px;
@@ -234,7 +265,34 @@ function Tasks() {
         .btn-primary:active:not(:disabled) { transform: translateY(0); }
         .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 
-        /* Task List */
+        .btn-secondary {
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: #f8fafc;
+          padding: 0 20px;
+          border-radius: 12px;
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 500;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          white-space: nowrap;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(255,255,255,0.2);
+        }
+        .btn-secondary:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        /* ----- Task List Layout ----- */
         .task-list {
           display: flex;
           flex-direction: column;
@@ -245,7 +303,7 @@ function Tasks() {
           padding: 20px 24px;
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: center; /* Changed from center to align description properly */
           transition: transform 0.2s, border-color 0.2s;
           animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
         }
@@ -260,6 +318,7 @@ function Tasks() {
           flex-direction: column; 
           align-items: flex-start;
           gap: 8px; 
+          max-width: 65%; /* Prevents text from pushing into the dropdown */
         }
 
         .task-title {
@@ -268,7 +327,13 @@ function Tasks() {
           color: #f1f5f9;
         }
 
-        /* Status Badges */
+        .task-description {
+          font-size: 14px;
+          color: rgba(255,255,255,0.5);
+          line-height: 1.5;
+          margin-bottom: 4px;
+        }
+
         .status-badge {
           font-size: 11px;
           font-weight: 600;
@@ -299,7 +364,6 @@ function Tasks() {
           border: 1px solid rgba(34,197,94,0.2);
         }
 
-        /* Task Actions Layout (Right side of Card) */
         .task-actions {
           display: flex;
           flex-direction: column;
@@ -312,10 +376,7 @@ function Tasks() {
           color: rgba(255,255,255,0.5);
         }
 
-        /* Custom Select */
-        .select-wrapper {
-          position: relative;
-        }
+        .select-wrapper { position: relative; }
 
         .status-select {
           appearance: none;
@@ -331,14 +392,8 @@ function Tasks() {
           transition: border-color 0.2s;
         }
 
-        .status-select:focus {
-          border-color: rgba(255,255,255,0.3);
-        }
-
-        .status-select option {
-          background: #1e1e24; 
-          color: #fff;
-        }
+        .status-select:focus { border-color: rgba(255,255,255,0.3); }
+        .status-select option { background: #1e1e24; color: #fff; }
 
         .select-icon {
           position: absolute;
@@ -389,14 +444,8 @@ function Tasks() {
           transform: translateY(-1px);
         }
 
-        .btn-pagination:active:not(:disabled) {
-          transform: translateY(0);
-        }
-
-        .btn-pagination:disabled {
-          opacity: 0.3;
-          cursor: not-allowed;
-        }
+        .btn-pagination:active:not(:disabled) { transform: translateY(0); }
+        .btn-pagination:disabled { opacity: 0.3; cursor: not-allowed; }
 
         .pagination-text {
           font-size: 14px;
@@ -414,62 +463,72 @@ function Tasks() {
 
           <div className="glass-card add-task-card">
             <form onSubmit={createTask} className="add-task-form">
-              <input
-                className="field-input"
-                placeholder="What needs to be done?"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
+              
+              {/* Row 1: Title, User Select, Add Task */}
+              <div className="form-row">
+                <input
+                  className="field-input"
+                  placeholder="What needs to be done?"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
 
-              <div className="form-select-wrapper">
-                <select
-                  className="form-select"
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
-                >
-                  <option value="">Assign User</option>
-                  {users.map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.name}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className="select-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+                <div className="form-select-wrapper">
+                  <select
+                    className="form-select"
+                    value={assignedTo}
+                    onChange={(e) => setAssignedTo(e.target.value)}
+                  >
+                    <option value="">Assign User</option>
+                    {users.map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  <svg className="select-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+
+                <button type="submit" className="btn-primary" disabled={loading}>
+                  {loading ? (
+                    "Adding..."
+                  ) : (
+                    <>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      Add Task
+                    </>
+                  )}
+                </button>
               </div>
 
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? (
-                  "Adding..."
-                ) : (
-                  <>
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    >
-                      <line x1="12" y1="5" x2="12" y2="19"></line>
-                      <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    Add Task
-                  </>
-                )}
-              </button>
+              {/* Row 2: Textarea & Generate Button */}
+              <div className="form-row">
+                <textarea
+                  className="field-textarea"
+                  placeholder="Task description (optional)"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+                <button 
+                  type="button"
+                  className="btn-secondary"
+                  disabled={!title.trim()} 
+                  onClick={async () => {
+                    if (!title.trim()) return;
+                    const res = await api.post("/ai/generate", { title });
+                    setDescription(res.data.description);
+                  }}
+                >
+                  ✨ Generate Description
+                </button>
+              </div>
+
             </form>
           </div>
 
@@ -487,6 +546,12 @@ function Tasks() {
                 >
                   <div className="task-info">
                     <p className="task-title">{task.title}</p>
+                    
+                    {/* Render the description here! */}
+                    {task.description && (
+                      <p className="task-description">{task.description}</p>
+                    )}
+
                     <span
                       className={`status-badge ${
                         task.status === "todo"
@@ -511,16 +576,7 @@ function Tasks() {
                         <option value="in-progress">In Progress</option>
                         <option value="done">Done</option>
                       </select>
-                      <svg
-                        className="select-icon"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      >
+                      <svg className="select-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
                       </svg>
                     </div>
@@ -536,7 +592,7 @@ function Tasks() {
             )}
           </div>
 
-          {/* New Pagination Component */}
+          {/* Pagination Component */}
           <div className="pagination">
             <button
               className="btn-pagination"
@@ -558,7 +614,6 @@ function Tasks() {
               Next →
             </button>
           </div>
-          
         </div>
       </div>
     </>

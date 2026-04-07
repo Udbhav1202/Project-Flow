@@ -6,9 +6,9 @@ const {
   getMyProjects
 } = require("../controllers/projectController");
 
-const auth = require("../middleware/authMiddleware");
+const protect = require("../middleware/authMiddleware");
 
-router.post("/", auth, createProject);
-router.get("/", auth, getMyProjects);
+router.post("/", protect, createProject);
+router.get("/", protect, getMyProjects);
 
 module.exports = router;

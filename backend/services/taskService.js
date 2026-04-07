@@ -2,9 +2,8 @@ const Task = require("../models/taskModel");
 const Project = require("../models/projectModel");
 const AppError = require("../utils/AppError");
 
-const createTaskService = async ({ title, projectId, assignedTo, userId }) => {
+const createTaskService = async ({ title, projectId, assignedTo, userId, description }) => {
 
-  console.log("Received assignedTo:", assignedTo);
   const project = await Project.findById(projectId);
 
   if (!assignedTo) {
@@ -23,6 +22,7 @@ const createTaskService = async ({ title, projectId, assignedTo, userId }) => {
     title,
     projectId,
     assignedTo,
+    description
   });
 
   return task;

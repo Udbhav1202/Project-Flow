@@ -7,11 +7,13 @@ const {
   updateTaskStatus
 } = require("../controllers/taskController");
 
-const auth = require("../middleware/authMiddleware");
+const protect = require("../middleware/authMiddleware");
 
-router.post("/", auth, createTask);
-router.get("/:projectId", auth, getTasksByProject);
-router.patch("/:id/status", auth, updateTaskStatus);
+router.post("/", protect, createTask);
+router.get("/:projectId", protect, getTasksByProject);
+
+router.patch("/:id/status", protect, updateTaskStatus);
+
 
 
 module.exports = router;
