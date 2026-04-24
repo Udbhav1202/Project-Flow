@@ -5,6 +5,7 @@ import Tasks from "./pages/Tasks";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import MyTasks from "./pages/MyTasks";
 
 function App() {
   return (
@@ -85,31 +86,60 @@ function App() {
           display: flex;
           flex-direction: column;
         }
+
+        /* New Logout Button Style */
+        .btn-logout {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: #f8fafc;
+          padding: 8px 16px;
+          border-radius: 8px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+          background: rgba(239, 68, 68, 0.1); /* Subtle red tint */
+          border-color: rgba(239, 68, 68, 0.3);
+          color: #fca5a5;
+        }
       `}</style>
 
       <div className="app-root">
         <header className="app-header">
-          
-          <Link to="/" className="brand">
+          <Link to="/projects" className="brand">
             <div className="brand-logo">
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <line x1="19" y1="8" x2="19" y2="14"/>
-                <line x1="22" y1="11" x2="16" y2="11"/>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <line x1="19" y1="8" x2="19" y2="14" />
+                <line x1="22" y1="11" x2="16" y2="11" />
               </svg>
             </div>
             <span className="brand-text">ProjectFlow</span>
           </Link>
-          
-          <div></div>
+
+          <div>
+            <button
+              className="btn-logout"
+              onClick={() => {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-  <Route path="/login" element={<Login />} />
-  <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             <Route
               path="/projects"
@@ -119,6 +149,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route path="/my" element={<MyTasks />} />
 
             <Route
               path="/projects/:projectId"

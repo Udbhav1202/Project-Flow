@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 function Projects() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -83,7 +85,6 @@ function Projects() {
           margin: 0 auto;
         }
 
-        /* ── Header ── */
         .proj-header {
           display: flex;
           align-items: center;
@@ -91,8 +92,6 @@ function Projects() {
           margin-bottom: 40px;
           animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
         }
-
-        .proj-header-left {}
 
         .proj-eyebrow {
           font-size: 11px;
@@ -128,6 +127,13 @@ function Projects() {
           top: -4px;
         }
 
+        /* NEW: Wrapper for the header buttons */
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
         .new-btn {
           display: flex;
           align-items: center;
@@ -152,6 +158,25 @@ function Projects() {
         }
 
         .new-btn:active { transform: translateY(0); }
+
+        /* NEW: Styling for the My Tasks button */
+        .btn-nav {
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 12px;
+          padding: 11px 20px;
+          color: #f8fafc;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-nav:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(255,255,255,0.2);
+        }
 
         /* ── Create Form Panel ── */
         .form-panel {
@@ -439,7 +464,6 @@ function Projects() {
 
       <div className="proj-root">
         <div className="proj-inner">
-
           <div className="proj-header">
             <div className="proj-header-left">
               <p className="proj-eyebrow">Dashboard</p>
@@ -450,13 +474,19 @@ function Projects() {
                 )}
               </h1>
             </div>
-            <button className="new-btn" onClick={() => setFormOpen(!formOpen)}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              New Project
-            </button>
+            
+            <div className="header-actions">
+              <button className="new-btn" onClick={() => setFormOpen(!formOpen)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                New Project
+              </button>
+              <button className="btn-nav" onClick={() => navigate("/my")}>
+                My Tasks
+              </button>
+            </div>
           </div>
 
           {formOpen && (
@@ -483,12 +513,16 @@ function Projects() {
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn-create" disabled={creating}>
-                    {creating ? <><div className="spinner" /> Creating…</> : <>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="20 6 9 17 4 12"/>
-                      </svg>
-                      Create Project
-                    </>}
+                    {creating ? (
+                      <><div className="spinner" /> Creating…</>
+                    ) : (
+                      <>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Create Project
+                      </>
+                    )}
                   </button>
                   <button type="button" className="btn-cancel" onClick={() => setFormOpen(false)}>
                     Cancel
@@ -500,21 +534,21 @@ function Projects() {
 
           <div className="proj-grid">
             {loading ? (
-              [0,1,2,3].map(i => (
+              [0, 1, 2, 3].map((i) => (
                 <div className="skeleton-card" key={i} style={{ animationDelay: `${i * 0.1}s` }}>
                   <div className="skel-block" style={{ width: 40, height: 40, borderRadius: 12, marginBottom: 16 }} />
-                  <div className="skel-block" style={{ width: '70%', height: 14 }} />
-                  <div className="skel-block" style={{ width: '45%', height: 12 }} />
-                  <div className="skel-block" style={{ width: '90%', height: 12 }} />
+                  <div className="skel-block" style={{ width: "70%", height: 14 }} />
+                  <div className="skel-block" style={{ width: "45%", height: 12 }} />
+                  <div className="skel-block" style={{ width: "90%", height: 12 }} />
                 </div>
               ))
             ) : projects.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="3" y="3" width="18" height="18" rx="4"/>
-                    <line x1="12" y1="8" x2="12" y2="16"/>
-                    <line x1="8" y1="12" x2="16" y2="12"/>
+                    <rect x="3" y="3" width="18" height="18" rx="4" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
                   </svg>
                 </div>
                 <p className="empty-title">No projects yet</p>
@@ -533,15 +567,13 @@ function Projects() {
                   >
                     <div className="card-avatar">{initial}</div>
                     <h3 className="card-title">{project.title}</h3>
-                    <p className="card-desc">
-                      {project.description || "No description provided."}
-                    </p>
+                    <p className="card-desc">{project.description || "No description provided."}</p>
                     <div className="card-footer">
                       <span className="card-tag">View tasks →</span>
                       <div className="card-arrow">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <line x1="5" y1="12" x2="19" y2="12"/>
-                          <polyline points="12 5 19 12 12 19"/>
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
                         </svg>
                       </div>
                     </div>
@@ -550,7 +582,6 @@ function Projects() {
               })
             )}
           </div>
-
         </div>
       </div>
     </>

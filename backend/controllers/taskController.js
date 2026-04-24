@@ -1,3 +1,4 @@
+const Task = require("../models/taskModel");
 
 const asyncHandler = require("../utils/asyncHandler");
 const {
@@ -28,6 +29,16 @@ const getTasksByProject = asyncHandler(async (req, res) => {
   res.json(data);
 });
 
+const getMyTasks = asyncHandler(async (req, res) => {
+  const tasks = await Task.find({
+    assignedTo: req.user.id,
+  })
+    .populate("projectId", "title")
+    .populate("assignedTo", "name");
+
+  res.json(tasks);
+});
+
 
 const updateTaskStatus = asyncHandler(async (req, res) => {
   const task = await updateTaskStatusService({
@@ -42,4 +53,4 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
 
 
 
-module.exports = { createTask, getTasksByProject, updateTaskStatus };
+module.exports = { createTask, getTasksByProject, updateTaskStatus, getMyTasks };
